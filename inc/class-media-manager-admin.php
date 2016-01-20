@@ -31,9 +31,9 @@ class Media_Manager_Admin extends Media_Manager_Core {
 	 * Create the page and add it to the menu.
 	 */
 	public function create_admin_page() {
-		add_options_page(
-			__ ( 'Media Manager', 'media-manager' ), // Page title
-			__ ( 'Media Manager', 'media-manager' ),       // Menu title
+		add_media_page(
+			__ ( 'Manager', 'media-manager' ), // Page title
+			__ ( 'Manager', 'media-manager' ),       // Menu title
 			'manage_options',                           // Capability required
 			self::SLUG,                            // The URL slug
 			array( $this, 'admin_page' )                // Displays the admin page
