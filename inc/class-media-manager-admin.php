@@ -104,11 +104,25 @@ class Media_Manager_Admin extends Media_Manager_Core {
 						$taxonomies = get_taxonomies( array( 'public' => true ) );
 						foreach ( $taxonomies as $key => $taxonomy ) {
 
+							// Get existing settings
+							$settings = get_option( self::OPTION );
+							if ( isset( $settings['taxonomy'][$taxonomy] ) ) {
+								$checked = 1;
+							} else {
+								$checked = 0;	
+							}
+
 							?>
 
 							<p>
-								<input type="checkbox" value="<?php echo esc_attr( $taxonomy ); ?>" />
-								<label><?php echo esc_html( $taxonomy ); ?></label>
+								<input 
+									id="<?php echo esc_attr( self::OPTION . '[taxonomy][' . $taxonomy . ']' ); ?>" 
+									name="<?php echo esc_attr( self::OPTION . '[taxonomy][' . $taxonomy . ']' ); ?>" 
+									type="checkbox" 
+									value="1"
+									<?php checked( $checked, 1, true ); ?>
+								 />
+								<label for="<?php echo esc_attr( self::OPTION . '[taxonomy][' . $taxonomy . ']' ); ?>"><?php echo esc_html( $taxonomy ); ?></label>
 							</p><?php
 						}
 
@@ -129,15 +143,23 @@ class Media_Manager_Admin extends Media_Manager_Core {
 	}
 
 	/**
-	 * Sanitize the page or product ID
+	 * Sanitize the settings.
 	 *
-	 * @param   string   $input   The input string
-	 * @return  array             The sanitized string
+	 * @param   string   $input   The input array
+	 * @return  array             The sanitized array
 	 */
 	public function sanitize( $input ) {
-//print_r( $input);die;
-return $input;
-		$output = wp_kses_post( $input );
+
+		foreach ( $input as $type => $selection ) {
+			$new_type = esc_html( $type );
+			foreach ( $selection as $name => $value ) {
+				$new_name = esc_html( $name );
+				$new_value = esc_html( $value );
+				$new_selection[$new_name] = $new_value;
+			}
+			$output[$new_type] = $new_selection;
+		}
+
 		return $output;
 	}
 
