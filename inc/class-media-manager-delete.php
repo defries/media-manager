@@ -102,8 +102,8 @@ class Media_Manager_Delete extends Media_Manager_Core {
 	public function activation() {
 
 		// first run = Now + 15 minutes
-		$first_run_time = current_time ( 'timestamp' ) + 30;
-		wp_schedule_event( $first_run_time, '30seconds', 'media_manager' );
+		$first_run_time = current_time ( 'timestamp' ) + SELF::TIME_LIMIT;
+		wp_schedule_event( $first_run_time, 'seconds' . SELF::TIME_LIMIT, 'media_manager' );
 	}
 
 	/**
@@ -121,9 +121,9 @@ class Media_Manager_Delete extends Media_Manager_Core {
 	 */
 	public function cron_schedules( $schedules ) {
 
-		$schedules['30seconds'] = array(
-			'interval' => 30,
-			'display'  => __( 'Every 30 seconds' )
+		$schedules['seconds' . SELF::TIME_LIMIT] = array(
+			'interval' => SELF::TIME_LIMIT,
+			'display'  => sprintf( __( 'Every %s seconds', 'media-manager' ), SELF::TIME_LIMIT ),
 		);
 
 		return $schedules;
