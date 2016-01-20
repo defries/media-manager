@@ -23,6 +23,9 @@ class Media_Manager_Delete extends Media_Manager_Core {
 
 	/**
 	 * Run the attachment deletion task.
+	 *
+	 * Uses transients to ensure that only small batches of posts are done each time.
+	 * Once a batch is complete, the post offset transient is iterated.
 	 */
 	public function task() {
 		$time = time();
