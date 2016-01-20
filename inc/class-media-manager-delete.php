@@ -51,6 +51,7 @@ if(isset($_GET['test'])){add_action( 'init', array( $this, 'task' ) );}
 			$query = new WP_Query( array(
 				'post_type'              => $this->get_post_types(),
 				'posts_per_page'         => SELF::ITERATION,
+				'post_status'            => 'publish',
 				'offset'                 => $offset,
 				'no_found_rows'          => true,
 				'update_post_meta_cache' => false,
