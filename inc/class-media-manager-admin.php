@@ -31,9 +31,9 @@ class Media_Manager_Admin extends Media_Manager_Core {
 	 * Create the page and add it to the menu.
 	 */
 	public function create_admin_page() {
-		add_options_page(
-			__ ( 'Media Manager', 'media-manager' ), // Page title
-			__ ( 'Media Manager', 'media-manager' ),       // Menu title
+		add_media_page(
+			__ ( 'Manager', 'media-manager' ), // Page title
+			__ ( 'Manager', 'media-manager' ),       // Menu title
 			'manage_options',                           // Capability required
 			self::SLUG,                            // The URL slug
 			array( $this, 'admin_page' )                // Displays the admin page
@@ -69,8 +69,8 @@ class Media_Manager_Admin extends Media_Manager_Core {
 							}
 
 							// Get existing settings
-							$settings = get_option( self::OPTION );
-							if ( isset( $settings['post_type'][$post_type] ) ) {
+							$post_types = $this->get_post_types();
+							if ( isset( $post_types[$post_type] ) ) {
 								$checked = 1;
 							} else {
 								$checked = 0;	
@@ -80,13 +80,13 @@ class Media_Manager_Admin extends Media_Manager_Core {
 
 							<p>
 								<input 
-									id="<?php echo esc_attr( self::OPTION . '[post_type][' . $post_type . ']' ); ?>" 
-									name="<?php echo esc_attr( self::OPTION . '[post_type][' . $post_type . ']' ); ?>" 
+									id="<?php echo esc_attr( self::OPTION . '[post_types][' . $post_type . ']' ); ?>" 
+									name="<?php echo esc_attr( self::OPTION . '[post_types][' . $post_type . ']' ); ?>" 
 									type="checkbox" 
 									value="1"
 									<?php checked( $checked, 1, true ); ?>
 								 />
-								<label for="<?php echo esc_attr( self::OPTION . '[post_type][' . $post_type . ']' ); ?>"><?php echo esc_html( $post_type ); ?></label>
+								<label for="<?php echo esc_attr( self::OPTION . '[post_types][' . $post_type . ']' ); ?>"><?php echo esc_html( $post_type ); ?></label>
 							</p><?php
 						}
 
@@ -105,8 +105,8 @@ class Media_Manager_Admin extends Media_Manager_Core {
 						foreach ( $taxonomies as $key => $taxonomy ) {
 
 							// Get existing settings
-							$settings = get_option( self::OPTION );
-							if ( isset( $settings['taxonomy'][$taxonomy] ) ) {
+							$taxonomies = $this->get_post_taxonomies();
+							if ( isset( $taxonomies[$taxonomy] ) ) {
 								$checked = 1;
 							} else {
 								$checked = 0;	
@@ -116,13 +116,13 @@ class Media_Manager_Admin extends Media_Manager_Core {
 
 							<p>
 								<input 
-									id="<?php echo esc_attr( self::OPTION . '[taxonomy][' . $taxonomy . ']' ); ?>" 
-									name="<?php echo esc_attr( self::OPTION . '[taxonomy][' . $taxonomy . ']' ); ?>" 
+									id="<?php echo esc_attr( self::OPTION . '[taxonomies][' . $taxonomy . ']' ); ?>" 
+									name="<?php echo esc_attr( self::OPTION . '[taxonomies][' . $taxonomy . ']' ); ?>" 
 									type="checkbox" 
 									value="1"
 									<?php checked( $checked, 1, true ); ?>
 								 />
-								<label for="<?php echo esc_attr( self::OPTION . '[taxonomy][' . $taxonomy . ']' ); ?>"><?php echo esc_html( $taxonomy ); ?></label>
+								<label for="<?php echo esc_attr( self::OPTION . '[taxonomies][' . $taxonomy . ']' ); ?>"><?php echo esc_html( $taxonomy ); ?></label>
 							</p><?php
 						}
 
