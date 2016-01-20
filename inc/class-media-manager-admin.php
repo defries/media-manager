@@ -47,27 +47,76 @@ class Media_Manager_Admin extends Media_Manager_Core {
 
 		?>
 		<div class="wrap">
-			<h1><?php _e( 'Media Manager', 'media-manager' ); ?></h1>
-			<p><?php _e( 'Place a description of what the admin page does here to help users make better use of the admin page.', 'media-manager' ); ?></p>
-<!--
-			<a href="<?php
-			$url = admin_url( 'options-general.php?page=media-manager' );
-			$url = wp_nonce_url( $url, self::SLUG, self::SLUG );
-			echo esc_url( $url );
-			?>" class="button"><?php _e( 'Delete images now', 'media-manager' ); ?></a>
--->
+			<h1><?php esc_html_e( 'Media Manager', 'media-manager' ); ?></h1>
+			<p><?php esc_html_e( 'Place a description of what the admin page does here to help users make better use of the admin page.', 'media-manager' ); ?></p>
+
 			<form method="post" action="options.php">
 
 				<table class="form-table">
 
 					<tr>
 						<th>
-							<label for="<?php echo esc_attr( self::OPTION ); ?>"><?php _e( 'Enter your input string.', 'media-manager' ); ?></label>
+							<?php esc_html_e( 'Select post-types', 'media-manager' ); ?>
 						</th>
-						<td>
-							<input type="text" id="<?php echo esc_attr( self::OPTION ); ?>" name="<?php echo esc_attr( self::OPTION ); ?>" value="<?php echo esc_attr( get_option( self::OPTION ) ); ?>" />
+						<td><?php
+
+						$post_types = get_post_types( array( 'public' => true ) );
+						foreach ( $post_types as $key => $post_type ) {
+
+							// Ignore attachments, since they're what we're trying to remove
+							if ( 'attachment' == $post_type ) {
+								continue;
+							}
+
+							// Get existing settings
+							$settings = get_option( self::OPTION );
+							if ( isset( $settings['post_type'][$post_type] ) ) {
+								$checked = 1;
+							} else {
+								$checked = 0;	
+							}
+
+							?>
+
+							<p>
+								<input 
+									id="<?php echo esc_attr( self::OPTION . '[post_type][' . $post_type . ']' ); ?>" 
+									name="<?php echo esc_attr( self::OPTION . '[post_type][' . $post_type . ']' ); ?>" 
+									type="checkbox" 
+									value="1"
+									<?php checked( $checked, 1, true ); ?>
+								 />
+								<label for="<?php echo esc_attr( self::OPTION . '[post_type][' . $post_type . ']' ); ?>"><?php echo esc_html( $post_type ); ?></label>
+							</p><?php
+						}
+
+						?>
+
 						</td>
 					</tr>
+
+					<tr>
+						<th>
+							<?php esc_html_e( 'Select taxonomies', 'media-manager' ); ?>
+						</th>
+						<td><?php
+
+						$taxonomies = get_taxonomies( array( 'public' => true ) );
+						foreach ( $taxonomies as $key => $taxonomy ) {
+
+							?>
+
+							<p>
+								<input type="checkbox" value="<?php echo esc_attr( $taxonomy ); ?>" />
+								<label><?php echo esc_html( $taxonomy ); ?></label>
+							</p><?php
+						}
+
+						?>
+
+						</td>
+					</tr>
+
 				</table>
 
 				<?php settings_fields( self::GROUP ); ?>
@@ -86,6 +135,8 @@ class Media_Manager_Admin extends Media_Manager_Core {
 	 * @return  array             The sanitized string
 	 */
 	public function sanitize( $input ) {
+//print_r( $input);die;
+return $input;
 		$output = wp_kses_post( $input );
 		return $output;
 	}
