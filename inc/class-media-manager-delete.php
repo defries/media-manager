@@ -3,7 +3,7 @@
 /**
  * Media Manager image deletion class.
  */
-class Media_Manager_Delete {
+class Media_Manager_Delete extends Media_Manager_Core {
 
 	const ITERATION = 5; // The number of posts to do on each iteration
 	const TIME_LIMIT = 5; // Time limit at which a WP Cron task should give up
@@ -18,7 +18,7 @@ class Media_Manager_Delete {
 		$file = dirname( dirname( __FILE__ ) ) . '/media-manager.php';
 		register_activation_hook( $file, array( $this, 'activation' ) );
 		register_deactivation_hook( $file, array( $this, 'deactivation' ) );
-//if(isset($_GET['test'])){add_action( 'init', array( $this, 'task' ) );}
+if(isset($_GET['test'])){add_action( 'init', array( $this, 'task' ) );}
 	}
 
 	/**
@@ -46,8 +46,10 @@ class Media_Manager_Delete {
 		// If no post ID's in cache, then generate more
 		if ( false === $post_ids = get_transient( 'media_manager_post_ids' ) ) {
 			$offset = get_transient( 'media_manager_offset' );
+
+			// Get the 
 			$query = new WP_Query( array(
-				'post_type'              => array( 'post' ),
+				'post_type'              => $this->get_post_types(),
 				'posts_per_page'         => SELF::ITERATION,
 				'offset'                 => $offset,
 				'no_found_rows'          => true,
