@@ -30,6 +30,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
 /**
  * Autoload the classes.
+ * Includes the classes, and automatically instantiates them via spl_autoload_register().
  *
  * @param  string  $class  The class being instantiated
  */
