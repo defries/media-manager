@@ -6,7 +6,7 @@
 class Media_Manager_Delete extends Media_Manager_Core {
 
 	const ITERATION = 5; // The number of posts to do on each iteration
-	const TIME_LIMIT = 5; // Time limit at which a WP Cron task should give up
+	const TIME_LIMIT = 30; // Time limit at which a WP Cron task should give up
 
 	/**
 	 * Fire the constructor up :)
@@ -23,12 +23,12 @@ class Media_Manager_Delete extends Media_Manager_Core {
 
 	/**
 	 * Run the attachment deletion task.
+	 *
+	 * Uses transients to ensure that only small batches of posts are done each time.
+	 * Once a batch is complete, the post offset transient is iterated.
 	 */
 	public function task() {
 		$time = time();
-//		$file = dirname( dirname( __FILE__ ) ) . '/test.txt';
-//		file_put_contents( $file, time() . "\n", FILE_APPEND );
-
 
 		// Set initial offset
 		if ( false == ( $offset = get_transient( 'media_manager_offset' ) ) ) {
@@ -70,7 +70,7 @@ class Media_Manager_Delete extends Media_Manager_Core {
 			}
 
 		}
-//print_r( $post_ids);
+
 		// Loop through the posts
 		foreach ( $post_ids as $key => $post_id ) {
 			$attached_media = get_attached_media( 'image', $post_id );
@@ -105,8 +105,8 @@ class Media_Manager_Delete extends Media_Manager_Core {
 	public function activation() {
 
 		// first run = Now + 15 minutes
-		$first_run_time = current_time ( 'timestamp' ) + 30;
-		wp_schedule_event( $first_run_time, '30seconds', 'media_manager' );
+		$first_run_time = current_time ( 'timestamp' ) + SELF::TIME_LIMIT;
+		wp_schedule_event( $first_run_time, 'seconds' . SELF::TIME_LIMIT, 'media_manager' );
 	}
 
 	/**
@@ -124,9 +124,9 @@ class Media_Manager_Delete extends Media_Manager_Core {
 	 */
 	public function cron_schedules( $schedules ) {
 
-		$schedules['30seconds'] = array(
-			'interval' => 30,
-			'display'  => __( 'Every 30 seconds' )
+		$schedules['seconds' . SELF::TIME_LIMIT] = array(
+			'interval' => SELF::TIME_LIMIT,
+			'display'  => sprintf( __( 'Every %s seconds', 'media-manager' ), SELF::TIME_LIMIT ),
 		);
 
 		return $schedules;
