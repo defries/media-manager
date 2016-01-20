@@ -18,7 +18,7 @@ class Media_Manager_Delete extends Media_Manager_Core {
 		$file = dirname( dirname( __FILE__ ) ) . '/media-manager.php';
 		register_activation_hook( $file, array( $this, 'activation' ) );
 		register_deactivation_hook( $file, array( $this, 'deactivation' ) );
-if(isset($_GET['test'])){add_action( 'init', array( $this, 'task' ) );}
+//if(isset($_GET['test'])){add_action( 'init', array( $this, 'task' ) );}
 	}
 
 	/**
