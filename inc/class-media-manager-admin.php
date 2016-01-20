@@ -47,27 +47,90 @@ class Media_Manager_Admin extends Media_Manager_Core {
 
 		?>
 		<div class="wrap">
-			<h1><?php _e( 'Media Manager', 'media-manager' ); ?></h1>
-			<p><?php _e( 'Place a description of what the admin page does here to help users make better use of the admin page.', 'media-manager' ); ?></p>
-<!--
-			<a href="<?php
-			$url = admin_url( 'options-general.php?page=media-manager' );
-			$url = wp_nonce_url( $url, self::SLUG, self::SLUG );
-			echo esc_url( $url );
-			?>" class="button"><?php _e( 'Delete images now', 'media-manager' ); ?></a>
--->
+			<h1><?php esc_html_e( 'Media Manager', 'media-manager' ); ?></h1>
+			<p><?php esc_html_e( 'Place a description of what the admin page does here to help users make better use of the admin page.', 'media-manager' ); ?></p>
+
 			<form method="post" action="options.php">
 
 				<table class="form-table">
 
 					<tr>
 						<th>
-							<label for="<?php echo esc_attr( self::OPTION ); ?>"><?php _e( 'Enter your input string.', 'media-manager' ); ?></label>
+							<?php esc_html_e( 'Select post-types', 'media-manager' ); ?>
 						</th>
-						<td>
-							<input type="text" id="<?php echo esc_attr( self::OPTION ); ?>" name="<?php echo esc_attr( self::OPTION ); ?>" value="<?php echo esc_attr( get_option( self::OPTION ) ); ?>" />
+						<td><?php
+
+						$post_types = get_post_types( array( 'public' => true ) );
+						foreach ( $post_types as $key => $post_type ) {
+
+							// Ignore attachments, since they're what we're trying to remove
+							if ( 'attachment' == $post_type ) {
+								continue;
+							}
+
+							// Get existing settings
+							$settings = get_option( self::OPTION );
+							if ( isset( $settings['post_type'][$post_type] ) ) {
+								$checked = 1;
+							} else {
+								$checked = 0;	
+							}
+
+							?>
+
+							<p>
+								<input 
+									id="<?php echo esc_attr( self::OPTION . '[post_type][' . $post_type . ']' ); ?>" 
+									name="<?php echo esc_attr( self::OPTION . '[post_type][' . $post_type . ']' ); ?>" 
+									type="checkbox" 
+									value="1"
+									<?php checked( $checked, 1, true ); ?>
+								 />
+								<label for="<?php echo esc_attr( self::OPTION . '[post_type][' . $post_type . ']' ); ?>"><?php echo esc_html( $post_type ); ?></label>
+							</p><?php
+						}
+
+						?>
+
 						</td>
 					</tr>
+
+					<tr>
+						<th>
+							<?php esc_html_e( 'Select taxonomies', 'media-manager' ); ?>
+						</th>
+						<td><?php
+
+						$taxonomies = get_taxonomies( array( 'public' => true ) );
+						foreach ( $taxonomies as $key => $taxonomy ) {
+
+							// Get existing settings
+							$settings = get_option( self::OPTION );
+							if ( isset( $settings['taxonomy'][$taxonomy] ) ) {
+								$checked = 1;
+							} else {
+								$checked = 0;	
+							}
+
+							?>
+
+							<p>
+								<input 
+									id="<?php echo esc_attr( self::OPTION . '[taxonomy][' . $taxonomy . ']' ); ?>" 
+									name="<?php echo esc_attr( self::OPTION . '[taxonomy][' . $taxonomy . ']' ); ?>" 
+									type="checkbox" 
+									value="1"
+									<?php checked( $checked, 1, true ); ?>
+								 />
+								<label for="<?php echo esc_attr( self::OPTION . '[taxonomy][' . $taxonomy . ']' ); ?>"><?php echo esc_html( $taxonomy ); ?></label>
+							</p><?php
+						}
+
+						?>
+
+						</td>
+					</tr>
+
 				</table>
 
 				<?php settings_fields( self::GROUP ); ?>
@@ -80,13 +143,23 @@ class Media_Manager_Admin extends Media_Manager_Core {
 	}
 
 	/**
-	 * Sanitize the page or product ID
+	 * Sanitize the settings.
 	 *
-	 * @param   string   $input   The input string
-	 * @return  array             The sanitized string
+	 * @param   string   $input   The input array
+	 * @return  array             The sanitized array
 	 */
 	public function sanitize( $input ) {
-		$output = wp_kses_post( $input );
+
+		foreach ( $input as $type => $selection ) {
+			$new_type = esc_html( $type );
+			foreach ( $selection as $name => $value ) {
+				$new_name = esc_html( $name );
+				$new_value = esc_html( $value );
+				$new_selection[$new_name] = $new_value;
+			}
+			$output[$new_type] = $new_selection;
+		}
+
 		return $output;
 	}
 
