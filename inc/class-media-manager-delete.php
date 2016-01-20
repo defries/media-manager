@@ -6,7 +6,7 @@
 class Media_Manager_Delete extends Media_Manager_Core {
 
 	const ITERATION = 5; // The number of posts to do on each iteration
-	const TIME_LIMIT = 5; // Time limit at which a WP Cron task should give up
+	const TIME_LIMIT = 30; // Time limit at which a WP Cron task should give up
 
 	/**
 	 * Fire the constructor up :)
@@ -26,9 +26,6 @@ class Media_Manager_Delete extends Media_Manager_Core {
 	 */
 	public function task() {
 		$time = time();
-//		$file = dirname( dirname( __FILE__ ) ) . '/test.txt';
-//		file_put_contents( $file, time() . "\n", FILE_APPEND );
-
 
 		// Set initial offset
 		if ( false == ( $offset = get_transient( 'media_manager_offset' ) ) ) {
@@ -70,7 +67,7 @@ class Media_Manager_Delete extends Media_Manager_Core {
 			}
 
 		}
-//print_r( $post_ids);
+
 		// Loop through the posts
 		foreach ( $post_ids as $key => $post_id ) {
 			$attached_media = get_attached_media( 'image', $post_id );
