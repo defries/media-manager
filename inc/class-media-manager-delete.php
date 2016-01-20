@@ -5,7 +5,6 @@
  */
 class Media_Manager_Delete extends Media_Manager_Core {
 
-	const ITERATION = 5; // The number of posts to do on each iteration
 	const TIME_LIMIT = 30; // Time limit at which a WP Cron task should give up
 
 	/**
@@ -28,29 +27,19 @@ class Media_Manager_Delete extends Media_Manager_Core {
 	 * Once a batch is complete, the post offset transient is iterated.
 	 */
 	public function task() {
-		$time = time();
 
 		// Set initial offset
 		if ( false == ( $offset = get_transient( 'media_manager_offset' ) ) ) {
 			set_transient( 'media_manager_offset', $offset = 0, DAY_IN_SECONDS );
 		}
 
-		// Get post ID's to process from cache
-		$post_ids = get_transient( 'media_manager_post_ids' );
-		if ( empty( $post_ids ) ) {
-			set_transient( 'media_manager_offset', $offset + self::ITERATION, DAY_IN_SECONDS );
-			delete_transient( 'media_manager_post_ids' );
-			$post_ids = false;
-		}
+		$time = time();
+		while ( time() < ( $time + self::TIME_LIMIT ) ) {
 
-		// If no post ID's in cache, then generate more
-		if ( false === $post_ids = get_transient( 'media_manager_post_ids' ) ) {
-			$offset = get_transient( 'media_manager_offset' );
-
-			// Get the 
+			// Get the post IDs
 			$query = new WP_Query( array(
 				'post_type'              => $this->get_post_types(),
-				'posts_per_page'         => SELF::ITERATION,
+				'posts_per_page'         => 1,
 				'post_status'            => 'publish',
 				'offset'                 => $offset,
 				'no_found_rows'          => true,
@@ -60,40 +49,33 @@ class Media_Manager_Delete extends Media_Manager_Core {
 			));
 			$post_ids = $query->posts;
 
-			// No Post ID's left, so delete everything and start over again, otherwise store in cache
+			// Completed all posts, so delete offset and bail out
 			if ( empty( $post_ids ) ) {
-				delete_transient( 'media_manager_post_ids' );
 				delete_transient( 'media_manager_offset' );
-			} else {
-				set_transient( 'media_manager_post_ids', $post_ids, DAY_IN_SECONDS );
-				set_transient( 'media_manager_offset', $offset, DAY_IN_SECONDS );
-			}
-
-		}
-
-		// Loop through the posts
-		foreach ( $post_ids as $key => $post_id ) {
-			$attached_media = get_attached_media( 'image', $post_id );
-			$featured_id = get_post_thumbnail_id( $post_id );
-
-			// Loop through media attached to each post
-			foreach ( $attached_media as $x => $attachment ) {
-				$attachment_id = $attachment->ID;
-
-				// If not a featured image, then delete the attachment
-				if ( $attachment_id != $featured_id ) {
-					wp_delete_post( $attachment_id );
-				}
-
-			}
-			unset( $post_ids[$key] );
-			set_transient( 'media_manager_post_ids', $post_ids, DAY_IN_SECONDS );
-
-			// If the time limit is reached, then bail out of the loop now (it will catch up during the next WP Cron task)
-			if ( time() > ( $time + self::ITERATION ) ) {
 				return;
 			}
 
+			// Loop through the posts
+			foreach ( $post_ids as $key => $post_id ) {
+				$attached_media = get_attached_media( 'image', $post_id );
+				$featured_id = get_post_thumbnail_id( $post_id );
+
+				// Loop through media attached to each post
+				foreach ( $attached_media as $x => $attachment ) {
+					$attachment_id = $attachment->ID;
+
+					// If not a featured image, then delete the attachment
+					if ( $attachment_id != $featured_id ) {
+						wp_delete_post( $attachment_id );
+					}
+
+				}
+
+				set_transient( 'media_manager_offset', $offset++, DAY_IN_SECONDS );
+
+			}
+
+			usleep( 0.1 * 1000000 ); // Delaying the execution (reduces resource consumption)
 		}
 
 		return;
