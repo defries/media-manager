@@ -17,7 +17,7 @@ abstract class Media_Manager_Core {
 	 *
 	 * @return  array  The post-types which should have their attachments deleted.
 	 */
-	public function get_post_types() {
+	protected function get_post_types() {
 		$settings = get_option( self::OPTION );
 		if ( isset( $settings['post_types'] ) ) {
 			$post_types = $settings['post_types'];
@@ -33,7 +33,7 @@ abstract class Media_Manager_Core {
 	 *
 	 * @return  array  The taxonomies which should have their attachments deleted.
 	 */
-	public function get_post_taxonomies() {
+	protected function get_post_taxonomies() {
 		$settings = get_option( self::OPTION );
 		if ( isset( $settings['taxonomies'] ) ) {
 			$taxonomies = $settings['taxonomies'];
