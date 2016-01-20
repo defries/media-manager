@@ -29,11 +29,16 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
 
 /**
- * The autoloader.
+ * Autoload the classes.
  *
  * @param  string  $class  The class being instantiated
  */
-function __autoload_media_manager( $class ) {
+function autoload_media_manager( $class ) {
+
+	// Bail out if not loading a Media Manager class
+	if ( 'Media_Manager_' != substr( $class, 0, 14 ) ) {
+		return;
+	}
 
 	$file_data = strtolower( $class );
 	$file_data = str_replace( '_', '-', $file_data );
@@ -45,8 +50,9 @@ function __autoload_media_manager( $class ) {
 	if ( file_exists( $path ) ) {
 		require( $path );
 	}
+
 }
-spl_autoload_register( '__autoload_media_manager' );
+spl_autoload_register( 'autoload_media_manager' );
 
 
 new Media_Manager_Admin;
