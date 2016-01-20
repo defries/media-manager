@@ -15,6 +15,7 @@ abstract class Media_Manager_Core {
 	/**
 	 * Get the post-types intended for deletion.
 	 *
+	 * @access  protected
 	 * @return  array  The post-types which should have their attachments deleted.
 	 */
 	protected function get_post_types() {
@@ -31,6 +32,7 @@ abstract class Media_Manager_Core {
 	/**
 	 * Get the taxonomies intended for deletion.
 	 *
+	 * @access  protected
 	 * @return  array  The taxonomies which should have their attachments deleted.
 	 */
 	protected function get_post_taxonomies() {
