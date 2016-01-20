@@ -29,24 +29,31 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
 
 /**
- * The autoloader.
+ * Autoload the classes.
+ * Includes the classes, and automatically instantiates them via spl_autoload_register().
  *
  * @param  string  $class  The class being instantiated
  */
-function __autoload_media_manager( $class ) {
+function autoload_media_manager( $class ) {
 
+	// Bail out if not loading a Media Manager class
+	if ( 'Media_Manager_' != substr( $class, 0, 14 ) ) {
+		return;
+	}
+
+	// Convert from the class name, to the classes file name
 	$file_data = strtolower( $class );
 	$file_data = str_replace( '_', '-', $file_data );
 	$file_name = 'class-' . $file_data . '.php';
 
+	// Get the classes file path
 	$dir = dirname( __FILE__ );
 	$path = $dir . '/inc/' . $file_name;
 
-	if ( file_exists( $path ) ) {
-		require( $path );
-	}
+	// Include the class (spl_autoload_register will automatically instantiate it for us)
+	require( $path );
 }
-spl_autoload_register( '__autoload_media_manager' );
+spl_autoload_register( 'autoload_media_manager' );
 
 
 new Media_Manager_Admin;
