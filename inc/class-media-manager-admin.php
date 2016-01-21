@@ -95,42 +95,6 @@ class Media_Manager_Admin extends Media_Manager_Core {
 						</td>
 					</tr>
 
-					<tr>
-						<th>
-							<?php esc_html_e( 'Select taxonomies', 'media-manager' ); ?>
-						</th>
-						<td><?php
-
-						$taxonomies = get_taxonomies( array( 'public' => true ) );
-						foreach ( $taxonomies as $key => $taxonomy ) {
-
-							// Get existing settings
-							$taxonomies = $this->get_post_taxonomies();
-							if ( isset( $taxonomies[$taxonomy] ) ) {
-								$checked = 1;
-							} else {
-								$checked = 0;	
-							}
-
-							?>
-
-							<p>
-								<input 
-									id="<?php echo esc_attr( self::OPTION . '[taxonomies][' . $taxonomy . ']' ); ?>" 
-									name="<?php echo esc_attr( self::OPTION . '[taxonomies][' . $taxonomy . ']' ); ?>" 
-									type="checkbox" 
-									value="1"
-									<?php checked( $checked, 1, true ); ?>
-								 />
-								<label for="<?php echo esc_attr( self::OPTION . '[taxonomies][' . $taxonomy . ']' ); ?>"><?php echo esc_html( $taxonomy ); ?></label>
-							</p><?php
-						}
-
-						?>
-
-						</td>
-					</tr>
-
 				</table>
 
 				<?php settings_fields( self::GROUP ); ?>
