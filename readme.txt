@@ -1,5 +1,5 @@
 === Media Manager ===
-Contributors: forsite
+Contributors: forsite, DeFries
 Tags: media, delete, attachments, forsite
 Requires at least: 4.4
 Stable tag: 1.0
