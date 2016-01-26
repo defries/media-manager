@@ -2,14 +2,14 @@
 Contributors: forsite, DeFries
 Tags: media, delete, attachments, forsite
 Requires at least: 4.4
-Stable tag: 1.0
+Stable tag: 1.0.1
 
 
 Automatically removes all image attachments from posts.
 
 == Description ==
 
-Automatically removes all image attachments from posts.
+Automatically removes all image attachments from posts. This is still in the alpha stage.
 
 
 == Installation ==
@@ -21,6 +21,10 @@ After you've downloaded and extracted the files:
 
 
 == Changelog ==
+
+= 1.0.1 =
+* Added DeFries as committer.
+* Add alpha notice.
 
 = 1.0 =
 * Initial release.
